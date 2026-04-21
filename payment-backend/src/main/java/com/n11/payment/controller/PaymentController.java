@@ -6,6 +6,8 @@ import com.n11.payment.dto.PaymentResponse;
 import com.n11.payment.entity.PaymentTransaction;
 import com.n11.payment.service.PaymentService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +28,8 @@ public class PaymentController {
     }
 
     @PostMapping
-    public PaymentTransaction pay(@Valid @RequestBody PaymentRequest request){
+    public PaymentTransaction pay(@Valid @RequestBody PaymentRequest request, @AuthenticationPrincipal UserDetails userDetails){
+        System.out.println("Payment initiated by: " + userDetails.getUsername());
         return paymentService.pay(request.getMethod(), request.getAmount());
     }
 
