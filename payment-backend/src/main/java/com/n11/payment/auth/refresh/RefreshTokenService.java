@@ -1,6 +1,7 @@
 package com.n11.payment.auth.refresh;
 
 
+import com.n11.payment.exception.AuthException;
 import com.n11.payment.security.JwtService;
 import com.n11.payment.user.User;
 import org.springframework.stereotype.Service;
@@ -28,12 +29,12 @@ public class RefreshTokenService {
 
     public RefreshToken verifyAndGet(String tokenString){
         RefreshToken token = repository.findByToken(tokenString)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+                .orElseThrow(() -> new AuthException("Invalid refresh token"));
         if(!token.isActive())
-            throw new IllegalArgumentException("Refresh token expired or revoked");
+            throw new AuthException("Refresh token expired or revoked");
 
         if(!jwtService.isTokenValid(tokenString) || !"refresh".equals(jwtService.extractTokenType(tokenString)))
-            throw new IllegalArgumentException("Invalid refresh token");
+            throw new AuthException("Invalid refresh token");
 
         return token;
     }

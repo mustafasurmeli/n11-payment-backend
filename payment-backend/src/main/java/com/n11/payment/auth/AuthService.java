@@ -4,6 +4,8 @@ package com.n11.payment.auth;
 import com.n11.payment.auth.dto.*;
 import com.n11.payment.auth.refresh.RefreshToken;
 import com.n11.payment.auth.refresh.RefreshTokenService;
+import com.n11.payment.exception.AuthException;
+import com.n11.payment.exception.ConflictException;
 import com.n11.payment.security.JwtService;
 import com.n11.payment.user.Role;
 import com.n11.payment.user.User;
@@ -28,9 +30,9 @@ public class AuthService {
 
     public UserResponse register(RegisterRequest request){
         if(userRepository.existsByUsername(request.getUsername()))
-            throw new IllegalArgumentException("Username already talen");
+            throw new ConflictException("Username already talen");
         if(userRepository.existsByEmail(request.getEmail()))
-            throw new IllegalArgumentException("Email already registered");
+            throw new ConflictException("Email already registered");
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -53,10 +55,10 @@ public class AuthService {
 
     public TokenResponse login(LoginRequest request){
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+                .orElseThrow(() -> new AuthException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new AuthException("Invalid username or password");
 
         String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.createFor(user);

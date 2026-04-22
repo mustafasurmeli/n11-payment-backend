@@ -2,6 +2,7 @@ package com.n11.payment.auth;
 
 
 import com.n11.payment.auth.dto.*;
+import com.n11.payment.exception.ResourceNotFoundException;
 import com.n11.payment.user.User;
 import com.n11.payment.user.UserRepository;
 import jakarta.validation.Valid;
@@ -48,7 +49,7 @@ public class AuthController {
     @GetMapping("/me")
     public UserResponse me(@AuthenticationPrincipal UserDetails userDetails){
         User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
         return  new UserResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 }
