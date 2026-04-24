@@ -30,7 +30,7 @@ public class AuthService {
 
     public UserResponse register(RegisterRequest request){
         if(userRepository.existsByUsername(request.getUsername()))
-            throw new ConflictException("Username already talen");
+            throw new ConflictException("Username already taken");
         if(userRepository.existsByEmail(request.getEmail()))
             throw new ConflictException("Email already registered");
 

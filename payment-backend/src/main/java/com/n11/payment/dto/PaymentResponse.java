@@ -1,16 +1,31 @@
 package com.n11.payment.dto;
 
-public class PaymentResponse {
-    private boolean success;
-    private String message;
+import com.n11.payment.entity.PaymentTransaction;
 
-    public PaymentResponse(boolean success, String message){
-        this.success = success;
-        this.message = message;
+import java.time.LocalDateTime;
+
+public class PaymentResponse {
+
+    private Long id;
+    private String method;
+    private Double amount;
+    private Boolean success;
+    private LocalDateTime createdAt;
+    private String username;
+
+    public PaymentResponse(PaymentTransaction transaction){
+        this.id = transaction.getId();
+        this.method = transaction.getMethod();
+        this.amount = transaction.getAmount();
+        this.success = transaction.getSuccess();
+        this.createdAt = transaction.getCreatedAt();
+        this.username = transaction.getUser().getUsername();
     }
 
-    public boolean isSuccess() { return success;}
-    public void setSuccess(boolean success) {this.success = success;}
-    public String getMessage() { return message;}
-    public void setMessage(String message) { this.message = message;}
+    public Long getId() { return id;}
+    public String getMethod() { return method;}
+    public Double getAmount() { return amount;}
+    public Boolean getSuccess() { return success;}
+    public LocalDateTime getCreatedAt() { return createdAt;}
+    public String getUsername() { return username;}
 }

@@ -1,6 +1,7 @@
 package com.n11.payment.entity;
 
 
+import com.n11.payment.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -25,13 +26,18 @@ public class PaymentTransaction {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public PaymentTransaction() {}
 
-    public PaymentTransaction(String method, Double amount, Boolean success){
+    public PaymentTransaction(String method, Double amount, Boolean success, User user){
         this.method = method;
         this.amount = amount;
         this.success = success;
         this.createdAt = LocalDateTime.now();
+        this.user = user;
     }
 
     public Long getId() { return id; }
@@ -39,5 +45,5 @@ public class PaymentTransaction {
     public Double getAmount() { return amount;}
     public Boolean getSuccess() { return  success;}
     public LocalDateTime getCreatedAt() {return createdAt;}
-
+    public User getUser() { return user;}
 }

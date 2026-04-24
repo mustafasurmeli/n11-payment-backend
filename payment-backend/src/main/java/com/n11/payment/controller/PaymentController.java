@@ -6,6 +6,7 @@ import com.n11.payment.dto.PaymentResponse;
 import com.n11.payment.entity.PaymentTransaction;
 import com.n11.payment.service.PaymentService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,26 @@ public class PaymentController {
     }
 
     @PostMapping
-    public PaymentTransaction pay(@Valid @RequestBody PaymentRequest request, @AuthenticationPrincipal UserDetails userDetails){
-        System.out.println("Payment initiated by: " + userDetails.getUsername());
-        return paymentService.pay(request.getMethod(), request.getAmount());
+    public PaymentResponse pay(@Valid @RequestBody PaymentRequest request, @AuthenticationPrincipal UserDetails userDetails){
+        return new PaymentResponse(
+                paymentService.pay(request.getMethod(), request.getAmount(), userDetails.getUsername())
+        );
+    }
+
+    @GetMapping("/me")
+    public List<PaymentResponse> getMine(@AuthenticationPrincipal UserDetails userDetails){
+        return paymentService.getTransactionsForUser(userDetails.getUsername())
+                .stream()
+                .map(PaymentResponse::new)
+                .toList();
     }
 
     @GetMapping
-    public List<PaymentTransaction> getAll() {
-        return paymentService.getAllTransactions();
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<PaymentResponse> getAll() {
+        return paymentService.getAllTransactions()
+                .stream()
+                .map(PaymentResponse::new)
+                .toList();
     }
 }
